@@ -20,7 +20,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="touch-area" v-for = "(z, y) in slots"  @touchstart.stop= 'touchstartHandle($event, z)' @touchmove.prevent = "touchmoveHandle($event, z)" @touchend = 'touchendHandle($event, z)'>
+                <div class="touch-area" v-for = "(z, y) in slots"  @touchstart.prevent= 'touchstartHandle($event, z)' @touchmove.prevent = "touchmoveHandle($event, z)" @touchend = 'touchendHandle($event, z)'>
                 </div>
             </div>
         </div>
@@ -35,19 +35,19 @@
         .pick-btn {
             border-bottom: 1px solid #eaeaea; font-size: .28rem; height: .8rem; display: flex; justify-content: space-between;
             button {
-                font-size: .28rem; width: 50%; display: block; text-align: center; color: #4ab7ed;
+                font-size: .28rem; width: 50%; display: block; text-align: center; color: #4ab7ed; height: .8rem; line-height: .8rem; border: 0;
             }
         }
         .pick-select {
-            position: relative; overflow: hidden; height: 500px; display: flex; 
+            position: relative; overflow: hidden; height: 300px; display: flex; 
             .touch-area {
                 flex: 1; height: 100%;
             }
             .middle-line {
-                position: absolute; top: 50%; transform: translate3d(0, -50%, 0); height: 100px;  left: 0; width: 100%; background: #f0f0f0; pointer-events: none; z-index: -1; display: flex; 
+                position: absolute; top: 50%; transform: translate3d(0, -50%, 0); height: 60px;  left: 0; width: 100%; background: #f0f0f0; pointer-events: none; z-index: -1; display: flex; 
             }
             .pick-item {
-                height: 100px; font-size: .28rem; text-align: center;line-height: 100px;
+                height: 60px; font-size: .28rem; text-align: center;line-height: 60px;
                 &.selected {
                     color:#4ab7ed;
                 }
@@ -63,7 +63,7 @@
         name:'vue-picker',
         data () {
             return {
-                singerHeight: 100, //单个高度
+                singerHeight: 60, //单个高度
                 allOptions: []   //所有的属性和变化的容器
             }
         },
@@ -89,6 +89,9 @@
                 let nowPageY = e.targetTouches[0].pageY;
                 let dis = nowPageY - this.allOptions[i].startPageY;
                 this.allOptions[i].top = this.allOptions[i].initTop + dis;
+                if(nowPageY > document.documentElement.clientHeight ) {
+                    this.touchendHandle(e, i);
+                }
             },
             touchendHandle (e, i) {
                 this.handlePosition(e, i);
@@ -115,8 +118,8 @@
                 let allOptions = this.allOptions[i];
                 let changeSelect = allOptions.changeSelect = Math.round(allOptions.top / this.singerHeight);
                 if(changeSelect > 0) allOptions.changeSelect = 0;
-                if(changeSelect < (-this.slots[i].value.length + 1)) allOptions.changeSelect = -this.slots[i].value.length + 1
-                allOptions.top = allOptions.changeSelect * this.singerHeight;    
+                if(changeSelect < (-this.slots[i].value.length + 1)) allOptions.changeSelect = -this.slots[i].value.length + 1;
+                allOptions.top = allOptions.changeSelect * this.singerHeight;  
             },
             cancle () {
                 this.show = false;
