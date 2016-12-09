@@ -16,7 +16,7 @@
             <div class="pick-select"> 
                 <div class='middle-line'>
                     <div v-for = "(x, j) in slots" class="slot-wrap" v-el:slot :style = "{transform: 'translate3D(0, ' + allOptions[x].top + 'px, 0)'}">
-                         <div class="pick-item" v-for="(i, o) in j.value" v-text="o" :class="{selected: -allOptions[x].changeSelect == i}">
+                         <div class="pick-item" v-for="(i, o) in j.value" v-text="o[j.showfield]" :class="{selected: -allOptions[x].changeSelect == i}">
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                 default: false,
                 required: true
             },
-            slots: {
+            slots: {                    //slots 里面 value 负责放数据对象,数组对象形式    showfield负责要显示的字段
                 type: Array,
                 required: true
             }
@@ -96,7 +96,7 @@
             init () {
                 //配置
                 this.slots.map((o, i) => {
-                    let values = o.value;
+                    //如果传过来的是字符串的话
                     let selectIndex = o.selectIndex;
                     this.allOptions.push({
                         selectIndex: selectIndex,
@@ -130,6 +130,13 @@
                  this.allOptions.map((o, i) => {
                     o.selectIndex = -o.changeSelect;
                 });
+
+                let selectArray = _ => {
+                    return this.slots.map((o, i) => {
+                        return o.value[this.allOptions[i].selectIndex];
+                    })
+                }
+                this.$dispatch('confirm', selectArray())
             }
         },
         created () {

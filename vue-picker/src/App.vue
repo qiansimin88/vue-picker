@@ -16,14 +16,63 @@ export default {
       select:2,
       slots : [
         {
-          value: ['a,b','c','d','e'],
-          selectIndex: 0
+          value: [
+            {
+              id:1,
+              hehe: 'hehe1'
+            },
+            {
+              id:2,
+              hehe: 'hehe2'
+            },
+            {
+              id:3,
+              hehe: 'hehe3'
+            },
+            {
+              id:4,
+              hehe: 'hehe4'
+            },
+            {
+              id:5,
+              hehe: 'hehe5'
+            },
+          ],
+          selectIndex: 3,
+          showfield: 'hehe'
         },
         {
-          value: ['f','g','h','e','i','q','l'],
-          selectIndex: 1
+          value: [
+            {
+              id:1,
+              xixi: 'xixi1'
+            },
+            {
+              id:2,
+              xixi: 'xixi2'
+            },
+            {
+              id:3,
+              xixi: 'xixi3'
+            },
+            {
+              id:4,
+              xixi: 'xixi4'
+            },
+            {
+              id:5,
+              xixi: 'xixi5'
+            },
+          ],
+          selectIndex: 1,
+          showfield: 'xixi'
         }
       ]
+    }
+  },
+  events: {
+    confirm (a) {
+      console.log(a)
     }
   },
   components: {
