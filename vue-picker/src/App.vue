@@ -1,8 +1,8 @@
 <template>
   <div id="app">
   <div @click="show = true">点击</div>
-  {{value[select]}}
-  <picker :select-index.sync ='select' :show.sync="show" :value="value"></picker>
+  {{slots[select]}}
+  <picker :show.sync="show" :slots="slots"></picker>
   </div>
 </template>
 
@@ -14,7 +14,16 @@ export default {
     return {
       show: true,
       select:2,
-      value : ['asdasd','呵呵呵',3,4,5,6,7.9,10,11,12]
+      slots : [
+        {
+          value: ['a,b','c','d','e'],
+          selectIndex: 0
+        },
+        {
+          value: ['f','g','h','e','i','q','l'],
+          selectIndex: 1
+        }
+      ]
     }
   },
   components: {

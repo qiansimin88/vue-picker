@@ -13,12 +13,14 @@
                      确定
                 </button>
             </div>
-            <div class="pick-select"  @touchstart.stop= 'touchstartHandle' @touchmove.prevent = "touchmoveHandle" @touchend = 'touchendHandle'> 
+            <div class="pick-select"> 
                 <div class='middle-line'>
-                    <div class="slot-wrap" v-el:slot :style = "{transform: `translate3D(0, ${top}px, 0)`}">
-                         <div class="pick-item" v-for="(i, o) in value" v-text="o" :class="{selected: -changeSelect == i}">
+                    <div v-for = "(x, j) in slots" class="slot-wrap" v-el:slot :style = "{transform: 'translate3D(0, ' + allOptions[x].top + 'px, 0)'}">
+                         <div class="pick-item" v-for="(i, o) in j.value" v-text="o" :class="{selected: -allOptions[x].changeSelect == i}">
                         </div>
                     </div>
+                </div>
+                <div class="touch-area" v-for = "(z, y) in slots"  @touchstart.stop= 'touchstartHandle($event, z)' @touchmove.prevent = "touchmoveHandle($event, z)" @touchend = 'touchendHandle($event, z)'>
                 </div>
             </div>
         </div>
@@ -37,9 +39,12 @@
             }
         }
         .pick-select {
-            position: relative; overflow: hidden; height: 500px;
+            position: relative; overflow: hidden; height: 500px; display: flex; 
+            .touch-area {
+                flex: 1; height: 100%;
+            }
             .middle-line {
-                position: absolute; top: 50%; transform: translate3d(0, -50%, 0); height: 100px;  left: 0; width: 100%; background: #f0f0f0; pointer-events: none; z-index: -1;
+                position: absolute; top: 50%; transform: translate3d(0, -50%, 0); height: 100px;  left: 0; width: 100%; background: #f0f0f0; pointer-events: none; z-index: -1; display: flex; 
             }
             .pick-item {
                 height: 100px; font-size: .28rem; text-align: center;line-height: 100px;
@@ -48,7 +53,7 @@
                 }
             }
             .slot-wrap {
-                transition: transform .2s ease-out; position: absolute; left: 0; width: 100%; top: 0;
+                transition: transform .2s ease-out;flex: 1;
             }
         }
     }
@@ -58,11 +63,8 @@
         name:'vue-picker',
         data () {
             return {
-                startPageY: 0,   //触摸开始的 Y 轴坐标
-                top: 0,
                 singerHeight: 100, //单个高度
-                initTop: 0,  //滑动之前的高度
-                changeSelect: 0  //滑动的距离dan'wei
+                allOptions: []   //所有的属性和变化的容器
             }
         },
         props: {
@@ -72,51 +74,65 @@
                 default: false,
                 required: true
             },
-            value: {
+            slots: {
                 type: Array,
                 required: true
-            },
-            selectIndex: {
-                twoway: true,
-                type: Number,
-                default: 0
             }
         },
         methods: {
-            touchstartHandle (e) {
-                this.initTop  = this.top;
-                this.startPageY = e.touches[0].pageY;
+            touchstartHandle (e, i) {
+                let allOptions = this.allOptions[i];
+                allOptions.initTop = allOptions.top;
+                allOptions.startPageY = e.touches[0].pageY;
             },
-            touchmoveHandle (e) {
+            touchmoveHandle (e, i) {
                 let nowPageY = e.targetTouches[0].pageY;
-                let dis = nowPageY - this.startPageY;
-                this.top = this.initTop + dis;
+                let dis = nowPageY - this.allOptions[i].startPageY;
+                this.allOptions[i].top = this.allOptions[i].initTop + dis;
             },
-            touchendHandle (e) {
-                this.handlePosition();
+            touchendHandle (e, i) {
+                this.handlePosition(e, i);
             },
             init () {
-                this.top = -this.selectIndex * this.singerHeight;
-                this.initTop = -this.selectIndex * this.singerHeight;
-                this.changeSelect = -this.selectIndex;
+                //配置
+                this.slots.map((o, i) => {
+                    let values = o.value;
+                    let selectIndex = o.selectIndex;
+                    this.allOptions.push({
+                        selectIndex: selectIndex,
+                        changeSelect: 0,  //滑动的距离单位
+                        startPageY: 0,      
+                        top: 0,         //当前的高度
+                        initTop: 0      //滑动之前当前模块的top
+                    });
+                    let allOptions = this.allOptions[i];
+                    allOptions.top = -allOptions.selectIndex * this.singerHeight;
+                    allOptions.initTop = -allOptions.selectIndex * this.singerHeight;
+                    allOptions.changeSelect = -allOptions.selectIndex;
+                });
             },
-            handlePosition() {
-                let changeSelect = this.changeSelect = Math.round(this.top / this.singerHeight);
-                if(changeSelect > 0) this.changeSelect = 0;
-                if(changeSelect < (-this.value.length + 1)) this.changeSelect = -this.value.length + 1
-                this.top = this.changeSelect * this.singerHeight;
+            handlePosition(e, i) {
+                let allOptions = this.allOptions[i];
+                let changeSelect = allOptions.changeSelect = Math.round(allOptions.top / this.singerHeight);
+                if(changeSelect > 0) allOptions.changeSelect = 0;
+                if(changeSelect < (-this.slots[i].value.length + 1)) allOptions.changeSelect = -this.slots[i].value.length + 1
+                allOptions.top = allOptions.changeSelect * this.singerHeight;    
             },
             cancle () {
                 this.show = false;
-                this.top = -this.selectIndex * this.singerHeight;
-                this.changeSelect = -this.selectIndex;
+                this.allOptions.map((o, i) => {
+                    o.top = -o.selectIndex * this.singerHeight;
+                    o.changeSelect = -o.selectIndex;
+                });
             },
             confirm () {
                 this.show = false;
-                this.selectIndex = -this.changeSelect;
+                 this.allOptions.map((o, i) => {
+                    o.selectIndex = -o.changeSelect;
+                });
             }
         },
-        ready () {
+        created () {
             this.init();
         }
     }
