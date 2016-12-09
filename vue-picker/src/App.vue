@@ -13,7 +13,6 @@ export default {
   data () {
     return {
       show: true,
-      select:2,
       slots : [
         {
           value: [
@@ -38,7 +37,7 @@ export default {
               hehe: 'hehe5'
             },
           ],
-          selectIndex: 3,
+          selectIndex: 0,
           showfield: 'hehe'
         },
         {
@@ -64,8 +63,34 @@ export default {
               xixi: 'xixi5'
             },
           ],
-          selectIndex: 1,
+          selectIndex: 0,
           showfield: 'xixi'
+        },
+        {
+          value: [
+            {
+              id:1,
+              dd: 'dd1'
+            },
+            {
+              id:2,
+              dd: 'dd2'
+            },
+            {
+              id:3,
+              dd: 'dd3'
+            },
+            {
+              id:4,
+              dd: 'dd4'
+            },
+            {
+              id:5,
+              dd: 'dd5'
+            },
+          ],
+          selectIndex: 0,
+          showfield: 'dd'
         }
       ]
     }
