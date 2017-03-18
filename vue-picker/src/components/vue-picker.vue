@@ -47,7 +47,7 @@
                 position: absolute; top: 50%; transform: translate3d(0, -50%, 0); height: 60px;  left: 0; width: 100%; background: #f0f0f0; pointer-events: none; z-index: -1; display: flex; 
             }
             .pick-item {
-                height: 60px; font-size: .28rem; text-align: center;line-height: 60px;
+                height: 60px; font-size: .24rem; text-align: center;line-height: 60px;
                 &.selected {
                     color:#4ab7ed;
                 }
@@ -60,12 +60,12 @@
 </style>
 <script>
     export default {
-        name:'vue-picker',
+        name:'vuepicker',
         data () {
             return {
                 singerHeight: 60, //单个高度
                 allOptions: []   //所有的属性和变化的容器
-            }
+            };
         },
         props: {
             show: {
@@ -73,6 +73,10 @@
                 twoway:true,
                 default: false,
                 required: true
+            },
+            islinkage: {            //是否是具有联动效果
+                type: Boolean,
+                default: true
             },
             slots: {                    //slots 里面 value 负责放数据对象,数组对象形式    showfield负责要显示的字段
                 type: Array,
@@ -120,6 +124,25 @@
                 if(changeSelect > 0) allOptions.changeSelect = 0;
                 if(changeSelect < (-this.slots[i].value.length + 1)) allOptions.changeSelect = -this.slots[i].value.length + 1;
                 allOptions.top = allOptions.changeSelect * this.singerHeight;  
+                //是否具有联动效果
+                if(this.islinkage) {
+                    this.disPatch(i);
+                    this.linkageReset(i);
+                }
+            },
+            //联动效果的重置top
+            linkageReset (i) {
+               this.allOptions.slice( i + 1 ).map( o => {
+                   o.selectIndex = 0;
+                   o.changeSelect = 0;
+                   o.startPageY = 0;
+                   o.top = 0;
+                   o.initTop = 0;
+               });
+            },
+            disPatch (i) {
+                this.allOptions[i].selectIndex =  -this.allOptions[i].changeSelect;
+                this.$dispatch('change', i, this.allOptions[i].selectIndex);
             },
             cancle () {
                 this.show = false;
@@ -130,20 +153,19 @@
             },
             confirm () {
                 this.show = false;
-                 this.allOptions.map((o, i) => {
+                this.allOptions.map((o, i) => {
                     o.selectIndex = -o.changeSelect;
                 });
-
                 let selectArray = _ => {
                     return this.slots.map((o, i) => {
                         return o.value[this.allOptions[i].selectIndex];
-                    })
-                }
-                this.$dispatch('confirm', selectArray())
+                    });
+                };
+                this.$dispatch('confirm', selectArray());
             }
         },
         created () {
             this.init();
         }
-    }
+    };
 </script>
