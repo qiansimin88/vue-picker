@@ -4,7 +4,8 @@
   "description": "vue-picker-selecter",
   "main": "index.js",
   "dependencies": {
-    "chalk": "^1.1.3"
+    "chalk": "^1.1.3",
+    "superagent": "^3.5.2"
   },
   "devDependencies": {},
   "scripts": {
